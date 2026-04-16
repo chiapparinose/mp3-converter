@@ -1,0 +1,11 @@
+# Example YouTube URLs for batch conversion
+# Lines starting with # are comments and will be ignored
+# Add one URL per line
+
+# Popular music videos (for testing)
+https://www.youtube.com/watch?v=dQw4w9WgXcQ
+https://www.youtube.com/watch?v=9bZkp7q19f0
+https://www.youtube.com/watch?v=kJQP7kiw5Fk
+
+# You can add more URLs here
+# https://www.youtube.com/watch?v=YOUR_VIDEO_ID
