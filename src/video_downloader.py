@@ -27,7 +27,8 @@ class VideoDownloader:
         use_cookies: bool = True,
         cookies_browser: Optional[str] = None,
         cookies_file: Optional[str] = None,
-        rotate_user_agent: bool = True
+        rotate_user_agent: bool = True,
+        proxy: Optional[str] = None
     ):
         """
         Initialize VideoDownloader with rate limiting bypass options.
@@ -38,6 +39,7 @@ class VideoDownloader:
             cookies_browser: Browser to extract cookies from ('chrome', 'firefox', 'edge', etc.)
             cookies_file: Path to cookies.txt file (alternative to browser extraction)
             rotate_user_agent: Enable user agent rotation
+            proxy: Proxy URL (e.g., 'http://user:pass@proxy.com:8080' or 'socks5://proxy.com:1080')
         """
         self.temp_dir = Path(temp_dir)
         self.temp_dir.mkdir(exist_ok=True)
@@ -52,6 +54,7 @@ class VideoDownloader:
         self.cookies_browser = cookies_browser or 'chrome'  # Default to Chrome
         self.cookies_file = cookies_file
         self.rotate_user_agent = rotate_user_agent
+        self.proxy = proxy
     
     def _get_ydl_opts(self, progress_hook: Callable) -> Dict[str, Any]:
         """
@@ -72,6 +75,13 @@ class VideoDownloader:
             'quiet': True,
             'no_warnings': True,
         }
+        
+        # Add proxy support (BEST for VPS datacenter IPs)
+        if self.proxy:
+            ydl_opts['proxy'] = self.proxy
+            # Hide credentials in log
+            proxy_display = self.proxy.split('@')[-1] if '@' in self.proxy else self.proxy
+            self.logger.info(f"Using proxy: {proxy_display}")
         
         # Add browser cookies for higher rate limits (BEST method)
         if self.use_cookies:
@@ -269,6 +279,10 @@ class VideoDownloader:
                 'no_warnings': True,
                 'extract_flat': False,
             }
+            
+            # Add proxy support
+            if self.proxy:
+                ydl_opts['proxy'] = self.proxy
             
             # Add cookies if enabled
             if self.use_cookies:
