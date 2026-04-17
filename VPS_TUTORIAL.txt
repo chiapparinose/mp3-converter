@@ -1,0 +1,43 @@
+=================================================================
+TUTORIAL SINGKAT - Deploy ke VPS
+=================================================================
+
+1. SSH ke VPS:
+   ssh root@your-vps
+
+2. Pull latest code:
+   cd ~/ytmp3-converter
+   git pull origin main
+
+3. Activate venv:
+   source venv/bin/activate
+
+4. Buat urls.txt:
+   cat > urls.txt << 'EOF'
+   https://www.youtube.com/watch?v=dQw4w9WgXcQ
+   https://www.youtube.com/watch?v=9bZkp7q19f0
+   EOF
+
+5. Run:
+   python3 convert_with_proxy.py
+
+DONE! ✓
+
+=================================================================
+File Penting:
+=================================================================
+- convert_with_proxy.py  → Main script
+- proxies.txt            → 100 proxies (sudah ada)
+- urls.txt               → YouTube URLs (buat sendiri)
+- src/proxy_manager.py   → Proxy rotation
+- src/smart_downloader.py → Hybrid method (proxy hanya metadata)
+
+=================================================================
+Metode Hybrid:
+=================================================================
+✓ Metadata via proxy (~50 KB) - bypass rate limit
+✓ Download direct (~10 MB) - save bandwidth 99%
+✓ Auto-rotation 100 proxies
+✓ IP-whitelisted (no auth needed)
+
+=================================================================
