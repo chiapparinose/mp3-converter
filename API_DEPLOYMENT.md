@@ -1,13 +1,15 @@
-# YouTube Data API - VPS Deployment Guide
+# YouTube Data API + Proxy - VPS Deployment Guide
 
-## ✅ Solution: YouTube Data API (FREE, No Rate Limiting)
+## ✅ Solution: YouTube Data API + Proxy Rotation
 
-**Test Results:**
-- ✓ 100/100 success rate (100%)
-- ✓ No rate limiting
-- ✓ FREE: 10,000 requests/day
-- ✓ No proxy needed
-- ✓ Speed: ~94 requests/minute
+**Method:**
+- ✓ Metadata via YouTube Data API (FREE, 10k/day, no rate limit)
+- ✓ Download via Proxy (bypass datacenter IP block)
+
+**Why This Works:**
+- API gets metadata without rate limit
+- Proxy bypasses "Sign in to confirm you're not a bot" error
+- Proxy only used for download (~10 MB per video)
 
 ---
 
@@ -24,78 +26,89 @@ git pull origin main
 pip3 install -r requirements.txt
 ```
 
-### 3. Prepare URLs File
+### 3. Setup Proxy File
+Make sure `proxies.txt` exists with your proxies (one per line):
+```
+209.50.178.235:3129
+45.67.89.123:8080
+...
+```
+
+### 4. Prepare URLs File
 ```bash
 # Create urls.txt with your YouTube URLs (one per line)
 nano urls.txt
 ```
 
-### 4. Run Converter
+### 5. Run Converter
 ```bash
 python3 convert_with_api.py
 ```
 
 ---
 
-## 📊 Usage
+## 📊 How It Works
 
-**Main Script:** `convert_with_api.py`
+**Step 1: Get Metadata (API)**
+- Uses YouTube Data API v3
+- FREE: 10,000 requests/day
+- No rate limiting
+- No proxy needed
 
-**Features:**
-- Uses YouTube Data API v3 for metadata (FREE, no rate limit)
-- Direct download without proxy
-- 10,000 requests/day quota (1 video = 1 quota)
-- Perfect for VPS datacenter IPs
+**Step 2: Download Video (Proxy)**
+- Uses proxy from `proxies.txt`
+- Automatic rotation (round-robin)
+- Health checking (skips bad proxies)
+- Bypasses datacenter IP block
 
-**Default Settings:**
-- Input: `urls.txt`
-- Output: `output/`
-- Bitrate: 192 kbps
+**Step 3: Convert to MP3**
+- Standard conversion
+- Embed metadata from API
 
 ---
 
-## 🔑 API Key
+## 🔑 Configuration
 
-Current API Key: `AIzaSyDEtALTlUCSyVuzJ2ReAefoDOUoRkNxnOo`
-
-**Daily Quota:** 10,000 requests/day
+**API Key:** `AIzaSyDEtALTlUCSyVuzJ2ReAefoDOUoRkNxnOo`
+- Daily quota: 10,000 requests
 - 1 video = 1 quota
-- Can convert 10,000 videos per day
+
+**Proxy File:** `proxies.txt`
+- Format: `IP:PORT` (one per line)
+- Supports IP-whitelisted proxies
+- Automatic rotation and health checking
 
 ---
 
 ## 📝 Example Usage
 
 ```bash
-# Single batch
+# Default (uses urls.txt and proxies.txt)
 python3 convert_with_api.py
 
-# Custom settings (edit script)
-# - Change urls_file='your_urls.txt'
-# - Change output_dir='your_output/'
-# - Change bitrate=320
+# Custom files (edit script)
+# - urls_file='your_urls.txt'
+# - proxies_file='your_proxies.txt'
+# - output_dir='your_output/'
+# - bitrate=320
 ```
 
 ---
 
-## ✅ Why This Works
+## ✅ Benefits
 
-**Problem:** VPS datacenter IPs get rate limited by YouTube
-**Solution:** YouTube Data API bypasses rate limiting completely
-
-**Method:**
-1. Get metadata via API (FREE, no rate limit)
-2. Download video directly (no proxy needed)
-3. Convert to MP3
-
-**Benefits:**
-- ✓ 100% success rate on VPS
-- ✓ No proxy costs
-- ✓ No rate limiting
-- ✓ Simple and reliable
+1. **No Rate Limiting** - API bypasses YouTube rate limits
+2. **Bypass Bot Detection** - Proxy bypasses datacenter IP block
+3. **Cost Effective** - Proxy only for download (~10 MB), not metadata (~50 KB)
+4. **Automatic Rotation** - Distributes load across proxies
+5. **Health Checking** - Skips bad proxies automatically
 
 ---
 
 ## 🎯 Production Ready
 
-This solution is tested and ready for production use on VPS.
+This solution combines the best of both worlds:
+- API for metadata (free, no rate limit)
+- Proxy for download (bypass bot detection)
+
+Ready for production use on VPS!
