@@ -53,19 +53,23 @@ def convert_batch(urls_file='urls.txt', output_dir='output', bitrate=192):
         try:
             # Smart downloader: proxy ONLY for metadata
             downloader = SmartDownloader(proxy=proxy, use_cookies=False, rotate_user_agent=True)
+            
+            # Pipeline with output_dir in constructor
             pipeline = ConversionPipeline(output_dir=output_dir, downloader=downloader)
             
             print(f"  Getting metadata via proxy...")
-            result = pipeline.convert(url, output_dir=output_dir, bitrate=bitrate)
             
-            if result.success:
+            # Convert (no output_dir parameter here)
+            mp3_file, error = pipeline.convert(url, bitrate=bitrate)
+            
+            if mp3_file:
                 success += 1
                 proxy_mgr.report_success(proxy)
-                print(f"  ✓ {result.mp3_file.filename} ({result.mp3_file.file_size_mb:.1f}MB)")
+                print(f"  ✓ {mp3_file.filename} ({mp3_file.file_size_mb:.1f}MB)")
             else:
                 failed += 1
                 proxy_mgr.report_failure(proxy)
-                print(f"  ✗ Failed")
+                print(f"  ✗ Failed: {error.error_message if error else 'Unknown error'}")
         except Exception as e:
             failed += 1
             proxy_mgr.report_failure(proxy)
